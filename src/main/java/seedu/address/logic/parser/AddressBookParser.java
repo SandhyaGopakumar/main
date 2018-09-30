@@ -40,13 +40,13 @@ public class AddressBookParser {
             return new AddCommandParser().parse(arguments);
 
         case AddEventCommand.COMMAND_WORD:
-                return new AddEventParser().parse(arguments);
+            return new AddEventCommandParser().parse(arguments);
 
         case EditCommand.COMMAND_WORD:
             return new EditCommandParser().parse(arguments);
 
         case EditEventCommand.COMMAND_WORD:
-                return new EditEventParser().parse(arguments);
+            return new EditEventCommandParser().parse(arguments);
 
         case SelectCommand.COMMAND_WORD:
             return new SelectCommandParser().parse(arguments);
@@ -54,6 +54,8 @@ public class AddressBookParser {
         case DeleteCommand.COMMAND_WORD:
             return new DeleteCommandParser().parse(arguments);
 
+        case DeleteEventCommand.COMMAND_WORD:
+            return new DeleteEventCommandParser().parse(arguments);
 
         case ClearCommand.COMMAND_WORD:
             return new ClearCommand();
