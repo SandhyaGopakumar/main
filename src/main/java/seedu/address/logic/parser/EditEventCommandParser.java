@@ -31,47 +31,36 @@ public class EditEventCommandParser implements Parser<EditEventCommand> {
         try {
             index = ParserUtil.parseIndex(argMultimap.getPreamble());
         } catch (ParseException pe) {
-            throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, EditCommand.MESSAGE_USAGE), pe);
+            throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, EditEventCommand.MESSAGE_USAGE), pe);
         }
 
-        EditCommand.EditPersonDescriptor editPersonDescriptor = new EditCommand.EditPersonDescriptor();
+        EditEventCommand.EditEventDescriptor editEventDescriptor = new EditEventCommand.EditEventDescriptor();
         if (argMultimap.getValue(PREFIX_NAME).isPresent()) {
-            editPersonDescriptor.setName(ParserUtil.parseName(argMultimap.getValue(PREFIX_NAME).get()));
-        }
-        if (argMultimap.getValue(PREFIX_PHONE).isPresent()) {
-            editPersonDescriptor.setPhone(ParserUtil.parsePhone(argMultimap.getValue(PREFIX_PHONE).get()));
-        }
-        if (argMultimap.getValue(PREFIX_EMAIL).isPresent()) {
-            editPersonDescriptor.setEmail(ParserUtil.parseEmail(argMultimap.getValue(PREFIX_EMAIL).get()));
-        }
-        if (argMultimap.getValue(PREFIX_ADDRESS).isPresent()) {
-            editPersonDescriptor.setAddress(ParserUtil.parseAddress(argMultimap.getValue(PREFIX_ADDRESS).get()));
-        }
-        parseTagsForEdit(argMultimap.getAllValues(PREFIX_TAG)).ifPresent(editPersonDescriptor::setTags);
-
-        if (!editPersonDescriptor.isAnyFieldEdited()) {
-            throw new ParseException(EditCommand.MESSAGE_NOT_EDITED);
+            editEventDescriptor.setEventName(ParserUtil.parseEventName(argMultimap.getValue(PREFIX_NAME).get()));
         }
 
-        return new EditCommand(index, editPersonDescriptor);
+        parseTagsForEdit(argMultimap.getAllValues(PREFIX_TAG)).ifPresent(editEventDescriptor::setTags);
+
+        if (!editEventDescriptor.isAnyFieldEdited()) {
+            throw new ParseException(EditEventCommand.MESSAGE_NOT_EDITED);
+        }
+
+        return new EditEventCommand(index, editEventDescriptor);
     }
 
-
     /**
-         * Parses {@code Collection<String> tags} into a {@code Set<Tag>} if {@code tags} is non-empty.
-         * If {@code tags} contain only one element which is an empty string, it will be parsed into a
-         * {@code Set<Tag>} containing zero tags.
-         */
-        private Optional<Set<Tag>> parseTagsForEdit(Collection<String> tags) throws ParseException {
-            assert tags != null;
+     * Parses {@code Collection<String> tags} into a {@code Set<Tag>} if {@code tags} is non-empty.
+     * If {@code tags} contain only one element which is an empty string, it will be parsed into a
+     * {@code Set<Tag>} containing zero tags.
+     */
+    private Optional<Set<Tag>> parseTagsForEdit(Collection<String> tags) throws ParseException {
+        assert tags != null;
 
-            if (tags.isEmpty()) {
-                return Optional.empty();
-            }
-            Collection<String> tagSet = tags.size() == 1 && tags.contains("") ? Collections.emptySet() : tags;
-            return Optional.of(ParserUtil.parseTags(tagSet));
+        if (tags.isEmpty()) {
+            return Optional.empty();
         }
-
+        Collection<String> tagSet = tags.size() == 1 && tags.contains("") ? Collections.emptySet() : tags;
+        return Optional.of(ParserUtil.parseTags(tagSet));
     }
 
 }
