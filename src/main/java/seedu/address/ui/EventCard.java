@@ -1,72 +1,71 @@
 package seedu.address.ui;
 
-import java.net.URL;
-import java.util.logging.Logger;
-
-import com.google.common.eventbus.Subscribe;
-
-import javafx.application.Platform;
-import javafx.event.Event;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
-import javafx.scene.web.WebView;
-import seedu.address.MainApp;
-import seedu.address.commons.core.LogsCenter;
-import seedu.address.commons.events.ui.PersonPanelSelectionChangedEvent;
+import seedu.address.model.event.Event;
 import seedu.address.model.person.Person;
 
 /**
- * The Browser Panel of the App.
+ * An UI component that displays information of a {@code Person}.
  */
-public class BrowserPanel extends UiPart<Region> {
+public class EventCard extends UiPart<Region> {
 
-    public static final String DEFAULT_PAGE = "default.html";
-    public static final String SEARCH_PAGE_URL =
-            "https://se-edu.github.io/addressbook-level4/DummySearchPage.html?name=";
+    private static final String FXML = "EventCard.fxml";
+    /**
+     * Note: Certain keywords such as "location" and "resources" are reserved keywords in JavaFX.
+     * As a consequence, UI elements' variable names cannot be set to such keywords
+     * or an exception will be thrown by JavaFX during runtime.
+     *
+     * @see <a href="https://github.com/se-edu/addressbook-level4/issues/336">The issue on AddressBook level 4</a>
+     */
 
-    private static final String FXML = "BrowserPanel.fxml";
-
-    private final Logger logger = LogsCenter.getLogger(getClass());
+    public final Event event;
 
     @FXML
-    private WebView browser;
+    private HBox cardPane;
+    @FXML
+    private Label name;
+    @FXML
+    private FlowPane tags;
 
-    public BrowserPanel() {
+    public EventCard(Event event) {
         super(FXML);
-
-        // To prevent triggering events for typing inside the loaded Web page.
-        getRoot().setOnKeyPressed(Event::consume);
-
-        loadDefaultPage();
-        registerAsAnEventHandler(this);
+        this.event = event;
+        name.setText(event.getEventName().getEventName());
+        createTags(event);
     }
 
-    private void loadPersonPage(Person person) {
-        loadPage(SEARCH_PAGE_URL + person.getName().fullName);
-    }
-
-    public void loadPage(String url) {
-        Platform.runLater(() -> browser.getEngine().load(url));
-    }
-
+    //@@author aaryamNUS
     /**
-     * Loads a default HTML file with a background that matches the general theme.
+     * Method createTags initialises the tag labels for {@code person}
+     * Note: This code was adapted from the example implementation provide by @yamgent from SE-EDU
      */
-    private void loadDefaultPage() {
-        URL defaultPage = MainApp.class.getResource(FXML_FILE_FOLDER + DEFAULT_PAGE);
-        loadPage(defaultPage.toExternalForm());
+    private void createTags(Event event) {
+        event.getEventTags().forEach(tag -> {
+            Label tagLabel = new Label(tag.tagName);
+            tagLabel.getStyleClass().add(getTagColor(tag.tagName));
+            tags.getChildren().add(tagLabel);
+        });
     }
+    //@@author
 
-    /**
-     * Frees resources allocated to the browser.
-     */
-    public void freeResources() {
-        browser = null;
-    }
+    @Override
+    public boolean equals(Object other) {
+        // short circuit if same object
+        if (other == this) {
+            return true;
+        }
 
-    @Subscribe
-    private void handlePersonPanelSelectionChangedEvent(PersonPanelSelectionChangedEvent event) {
-        logger.info(LogsCenter.getEventHandlingLogMessage(event));
-        loadPersonPage(event.getNewSelection());
+        // instanceof handles nulls
+        if (!(other instanceof EventCard)) {
+            return false;
+        }
+
+        // state check
+        EventCard card = (EventCard) other;
+        return event.equals(card.event);
     }
 }

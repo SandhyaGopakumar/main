@@ -94,6 +94,11 @@ public class ModelManager extends ComponentManager implements Model {
         indicateAddressBookChanged();
     }
 
+    @Override
+    public Event getEventDetails() {
+        return versionedAddressBook.getEventDetails();
+    }
+
     //=========== Filtered Person List Accessors =============================================================
 
     /**

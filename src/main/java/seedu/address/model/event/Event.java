@@ -29,8 +29,10 @@ public class Event {
         this.isNotInitialisedByUser = false;
     }
     public Event() {
-        EventName eventName = new EventName("event not created yet");
+        EventName eventName = new EventName("Event details not added yet");
         this.eventName = eventName;
+        //Tag tag = new Tag("Add in name, date, venue and other details.");
+        //this.eventTags.add(tag);
         this.isNotInitialisedByUser = true;
     }
 
